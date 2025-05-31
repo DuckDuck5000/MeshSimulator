@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>MeshSim Dashboard (2D)</title>
+  <style>
+    /* ────────────────── Global & Layout Styles ────────────────── */
+    html, body {
+      margin: 0;
+      padding: 0;
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      height: 100vh;
+      overflow: hidden;               /* prevent page‐level scrollbars */
+      display: flex;                  /* make the top‐level a row flex container */
+    }
+
+    /* ─ Left “Controls” Pane ─ */
+    #controls {
+      width: 300px;
+      border-right: 1px solid #ccc;
+      box-sizing: border-box;
+      padding: 20px;
+      background: #f0f4f8;
+      overflow-y: auto;               /* scroll internally if it gets too tall */
+      flex-shrink: 0;                 /* never let this pane shrink below its 300px width */
+    }
+    #controls h2 {
+      margin-top: 0;
+      font-size: 1.2em;
+      color: #333;
+    }
+
+    /* Ensure each “row” in the controls is on its own line */
+    #controls .row {
+      margin-bottom: 12px;
+    }
+
+    /* Style for labels, inputs, etc. */
+    #controls label {
+      display: block;
+      margin-top: 8px;
+      color: #444;
+      font-size: 0.9em;
+    }
+    #controls input[type="range"],
+    #controls select,
+    #controls input[type="text"],
+    #controls textarea {
+      width: 100%;
+      margin-top: 5px;
+      box-sizing: border-box;
+      font-size: 0.9em;
+      padding: 6px 8px;
+      border: 1px solid #bbb;
+      border-radius: 4px;
+      background: white;
+    }
+    #controls select {
+      appearance: none;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+    }
+    #controls textarea {
+      resize: vertical;
+      font-family: "Consolas", Monaco, monospace;
+      font-size: 0.9em;
+      line-height: 1.3;
+    }
+    #controls button {
+      margin-top: 15px;
+      padding: 10px;
+      width: 100%;
+      cursor: pointer;
+      background: #3b82f6;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      font-size: 0.9em;
+    }
+    #controls button:disabled {
+      background: #a5b4fc;
+      cursor: not-allowed;
+    }
+
+    /* A utility class to ensure checkboxes + labels are side‐by‐side */
+    .checkbox-row {
+      display: flex;
+      align-items: center;
+      margin-top: 4px;
+    }
+    .checkbox-row input[type="checkbox"] {
+      margin-right: 6px;
+    }
+
+    /* ────────────────── Right “Visualization + Log” Pane ────────────────── */
+    #main {
+      flex: 1;                         /* take up all remaining width */
+      display: flex;
+      flex-direction: column;
+      background: #ffffff;
+      height: 100vh;                   /* fill the full viewport height */
+      overflow: hidden;                /* we will let inner panes scroll if needed */
+    }
+
+    /* Header bars above each section */
+    #vis-header, #log-header {
+      padding: 8px 12px;
+      background: #1e293b;
+      color: #f1f5f9;
+      font-size: 1em;
+      flex-shrink: 0;
+    }
+
+    /* Container for the SVG graph */
+    #vis-container {
+      flex: 2;                         /* take 2/3 of the height */
+      background: #f9fafb;
+      position: relative;
+      overflow: hidden; 
+      width: 100%;
+      height: 100%;             /* SVG will size itself inside */
+    }
+    #graph {
+      width: 100%;
+      height: 100%;
+      display: block;                  /* ensures it fills its parent */
+    }
+
+    /* Event log area */
+    #log {
+      flex: 1;                         /* take 1/3 of the height */
+      padding: 10px;
+      font-size: 0.9em;
+      overflow-y: auto;                /* scroll if too many log lines */
+      background: #ffffff;
+    }
+    #log div {
+      margin-bottom: 6px;
+      color: #1f2937;
+    }
+
+    /* D3‐specific styling */
+    .link-line {
+      stroke: #888;
+      stroke-width: 1.5px;
+    }
+    .node-circle {
+      stroke: #333;
+      stroke-width: 1.2px;
+      cursor: pointer;
+    }
+    .node-label {
+      pointer-events: none;
+      font-size: 10px;
+      text-anchor: middle;
+      fill: #333;
+    }
+    .packet-dot {
+      pointer-events: none;
+      fill: #e63946;
+    }
+  </style>
+</head>
+<body>
+  <!-- ────────────────── Left Controls Pane ────────────────── -->
+  <div id="controls">
+    <h2>Mesh Simulator</h2>
+
+    <!-- 1) Mode selection: “Use Existing Topology” vs “Create Custom Topology” -->
+    <div class="row">
+      <div class="checkbox-row">
+        <input type="radio" name="topoMode" id="modeExisting" value="existing" checked>
+        <label for="modeExisting" style="margin: 0;">Use Existing Topology</label>
+      </div>
+      <div class="checkbox-row">
+        <input type="radio" name="topoMode" id="modeCustom" value="custom">
+        <label for="modeCustom" style="margin: 0;">Create Custom Topology</label>
+      </div>
+    </div>
+
+    <!-- 2) Existing Topology Dropdown -->
+    <div id="existingBlock" class="row">
+      <label for="topology">Select Topology:</label>
+      <select id="topology">
+        <option value="" disabled selected>-- choose file --</option>
+      </select>
+    </div>
+
+    <!-- 3) Custom Topology: Paste YAML or Build Form (initially hidden) -->
+    <div id="customBlock" class="row" style="display: none;">
+      <div class="subTab">
+        <div class="checkbox-row" style="margin-top: 0;">
+          <input type="radio" name="customTab" id="tabPasteYaml" value="pasteYaml" checked>
+          <label for="tabPasteYaml" style="margin: 0;">Paste YAML</label>
+        </div>
+        <div class="checkbox-row" style="margin-top: 0;">
+          <input type="radio" name="customTab" id="tabBuildForm" value="buildForm">
+          <label for="tabBuildForm" style="margin: 0;">Build with Form</label>
+        </div>
+      </div>
+      <!-- 3a) Paste YAML textarea -->
+      <div id="pasteYamlBlock" class="row" style="display: none;">
+        <label for="customYaml">Paste your custom YAML (≤30 nodes):</label>
+        <textarea
+          id="customYaml"
+          rows="6"
+          placeholder="nodes:
+  - id: A
+    neighbors: [B, C]
+  - id: B
+    neighbors: [A, C]
+  - id: C
+    neighbors: [A, B]
+"
+        ></textarea>
+      </div>
+      <!-- 3b) Build with Form -->
+      <div id="buildFormBlock" class="row" style="display: none;">
+        <label for="nodeCount">Number of Nodes (1–10):</label>
+        <select id="nodeCount">
+          <option value="0" selected disabled>— select # of nodes —</option>
+          <option value="1">1</option>
+          <option value="2">2</option>
+          <option value="3">3</option>
+          <option value="4">4</option>
+          <option value="5">5</option>
+          <option value="6">6</option>
+          <option value="7">7</option>
+          <option value="8">8</option>
+          <option value="9">9</option>
+          <option value="10">10</option>
+        </select>
+        <div id="nodeSections" style="margin-top: 10px;"></div>
+      </div>
+    </div>
+
+    <!-- 4) Sliders for Drop Rate / TTL -->
+    <div class="row">
+      <label for="dropRate">Drop Rate: <span id="dropRateValue">0.20</span></label>
+      <input type="range" id="dropRate" min="0" max="1" step="0.01" value="0.20">
+    </div>
+    <div class="row">
+      <label for="ttl">Initial TTL: <span id="ttlValue">10</span></label>
+      <input type="range" id="ttl" min="1" max="50" step="1" value="10">
+    </div>
+
+    <!-- 5) Load / Configure button -->
+    <div class="row">
+      <button id="loadTopology">Load Topology</button>
+    </div>
+
+    <!-- 6) Sender / Recipient -->
+    <div class="row">
+      <label for="sender">Sender:</label>
+      <select id="sender" disabled>
+        <option value="" disabled selected>– load topology –</option>
+      </select>
+    </div>
+    <div class="row">
+      <label for="recipient">Recipient:</label>
+      <select id="recipient" disabled>
+        <option value="" disabled selected>– load topology –</option>
+      </select>
+    </div>
+
+    <!-- 7) Send / Reset buttons -->
+    <div class="row">
+      <button id="sendMsg" disabled>Send Message</button>
+    </div>
+    <div class="row">
+      <button id="resetSim" disabled>Reset Simulation</button>
+    </div>
+
+    <!-- 8) Tip text -->
+    <div class="row" style="margin-top: 8px;">
+      <p style="font-size: 0.85em; color: #555; margin: 0;">
+        Tip: To replay or adjust parameters, click “Reset Simulation.”
+      </p>
+    </div>
+  </div>
+
+  <!-- ────────────────── Right Visualization & Log Pane ────────────────── -->
+  <div id="main">
+    <!-- 9) Visualization Header -->
+    <div id="vis-header">Visualization</div>
+    <!-- 10) SVG for 2D D3 graph -->
+    <div id="vis-container">
+      <svg id="graph"></svg>
+    </div>
+    <!-- 11) Log Header -->
+    <div id="log-header">Event Log</div>
+    <div id="log"></div>
+  </div>
+
+  <!-- ────────────────── External Libraries ────────────────── -->
+  <!-- D3.js (v7) for force‐directed graph -->
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <!-- js-yaml for YAML parsing/dumping -->
+  <script src="https://unpkg.com/js-yaml@4.1.0/dist/js-yaml.min.js"></script>
+  <!-- Our simplified 2D app.js -->
+  <script src="/static/app.js"></script>
+</body>
+</html>

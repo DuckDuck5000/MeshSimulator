@@ -1,0 +1,9 @@
+nodes:
+  - id: "A"
+    neighbors: ["B", "C"]
+  - id: "B"
+    neighbors: ["A", "D"]
+  - id: "C"
+    neighbors: ["A"]
+  - id: "D"
+    neighbors: ["B"]

@@ -1,0 +1,15 @@
+nodes:
+  - id: "NodeA"
+    neighbors: ["NodeB", "NodeC", "NodeD", "NodeE", "NodeF"]
+  - id: "NodeB"
+    neighbors: ["NodeA", "NodeC", "NodeD", "NodeE", "NodeF"]
+  - id: "NodeC"
+    neighbors: ["NodeA", "NodeB", "NodeD", "NodeE", "NodeF"]
+  - id: "NodeD"
+    neighbors: ["NodeA", "NodeB", "NodeC", "NodeE", "NodeF"]
+  - id: "NodeE"
+    neighbors: ["NodeA", "NodeB", "NodeC", "NodeD", "NodeF"]
+  - id: "NodeF"
+    neighbors: ["NodeA", "NodeB", "NodeC", "NodeD", "NodeE"]
+# This YAML file represents a full mesh topology with 6 nodes, where each node is connected to every other node.
+# Each node is labeled from NodeA to NodeF, and each node has a list of its neighboring nodes, which includes all other nodes in the mesh.

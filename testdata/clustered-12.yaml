@@ -1,0 +1,44 @@
+nodes:
+  # Cluster 1 (Nodes C1–C4)
+  - id: "C1"
+    neighbors: ["C2", "C3", "C4", "Bridge1"]
+  - id: "C2"
+    neighbors: ["C1", "C3", "C4", "Bridge1"]
+  - id: "C3"
+    neighbors: ["C1", "C2", "C4", "Bridge1"]
+  - id: "C4"
+    neighbors: ["C1", "C2", "C3", "Bridge1"]
+
+  # Bridge between Cluster 1 and Cluster 2
+  - id: "Bridge1"
+    neighbors: ["C1", "C2", "C3", "C4", "Bridge2"]
+
+  # Cluster 2 (Nodes C5–C8)
+  - id: "C5"
+    neighbors: ["C6", "C7", "C8", "Bridge1", "Bridge2"]
+  - id: "C6"
+    neighbors: ["C5", "C7", "C8", "Bridge1", "Bridge2"]
+  - id: "C7"
+    neighbors: ["C5", "C6", "C8", "Bridge1", "Bridge2"]
+  - id: "C8"
+    neighbors: ["C5", "C6", "C7", "Bridge1", "Bridge2"]
+
+  # Bridge between Cluster 2 and Cluster 3
+  - id: "Bridge2"
+    neighbors: ["Bridge1", "C5", "C6", "C7", "C8", "Bridge3"]
+
+  # Cluster 3 (Nodes C9–C12)
+  - id: "C9"
+    neighbors: ["C10", "C11", "C12", "Bridge2", "Bridge3"]
+  - id: "C10"
+    neighbors: ["C9", "C11", "C12", "Bridge2", "Bridge3"]
+  - id: "C11"
+    neighbors: ["C9", "C10", "C12", "Bridge2", "Bridge3"]
+  - id: "C12"
+    neighbors: ["C9", "C10", "C11", "Bridge2", "Bridge3"]
+
+  # Bridge between Cluster 3 and Cluster 1 (completes ring)
+  - id: "Bridge3"
+    neighbors: ["Bridge2", "C9", "C10", "C11", "C12", "Bridge1"]
+# This YAML file represents a clustered topology with 12 nodes organized into three clusters (C1–C4, C5–C8, C9–C12).
+# Each cluster is fully connected internally, and there are bridges connecting the clusters in a ring topology.

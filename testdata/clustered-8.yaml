@@ -1,0 +1,23 @@
+nodes:
+  - id: "N1"
+    neighbors: ["N2","N3","N4","N5","N6","N7","N8","N9","N10"]
+  - id: "N2"
+    neighbors: ["N1","N3","N4","N5","N6","N7","N8","N9","N10"]
+  - id: "N3"
+    neighbors: ["N1","N2","N4","N5","N6","N7","N8","N9","N10"]
+  - id: "N4"
+    neighbors: ["N1","N2","N3","N5","N6","N7","N8","N9","N10"]
+  - id: "N5"
+    neighbors: ["N1","N2","N3","N4","N6","N7","N8","N9","N10"]
+  - id: "N6"
+    neighbors: ["N1","N2","N3","N4","N5","N7","N8","N9","N10"]
+  - id: "N7"
+    neighbors: ["N1","N2","N3","N4","N5","N6","N8","N9","N10"]
+  - id: "N8"
+    neighbors: ["N1","N2","N3","N4","N5","N6","N7","N9","N10"]
+  - id: "N9"
+    neighbors: ["N1","N2","N3","N4","N5","N6","N7","N8","N10"]
+  - id: "N10"
+    neighbors: ["N1","N2","N3","N4","N5","N6","N7","N8","N9"]
+# This YAML file represents a full mesh topology with 10 nodes, where each node is connected to every other node.
+# Each node is labeled from N1 to N10, and each node has a list of its neighboring nodes, which includes all other nodes in the mesh.
