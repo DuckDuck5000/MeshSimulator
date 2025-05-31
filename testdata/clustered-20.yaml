@@ -1,0 +1,54 @@
+nodes:
+  # Cluster A (A1–A5)
+  - id: "A1"
+    neighbors: ["A2", "A3", "A4", "A5", "BridgeA"]
+  - id: "A2"
+    neighbors: ["A1", "A3", "A4", "A5", "BridgeA"]
+  - id: "A3"
+    neighbors: ["A1", "A2", "A4", "A5", "BridgeA"]
+  - id: "A4"
+    neighbors: ["A1", "A2", "A3", "A5", "BridgeA"]
+  - id: "A5"
+    neighbors: ["A1", "A2", "A3", "A4", "BridgeA"]
+
+  # Cluster B (B1–B4)
+  - id: "B1"
+    neighbors: ["B2", "B3", "B4", "BridgeA", "BridgeB"]
+  - id: "B2"
+    neighbors: ["B1", "B3", "B4", "BridgeA", "BridgeB"]
+  - id: "B3"
+    neighbors: ["B1", "B2", "B4", "BridgeA", "BridgeB"]
+  - id: "B4"
+    neighbors: ["B1", "B2", "B3", "BridgeA", "BridgeB"]
+
+  # Cluster C (C1–C5)
+  - id: "C1"
+    neighbors: ["C2", "C3", "C4", "C5", "BridgeB", "BridgeC"]
+  - id: "C2"
+    neighbors: ["C1", "C3", "C4", "C5", "BridgeB", "BridgeC"]
+  - id: "C3"
+    neighbors: ["C1", "C2", "C4", "C5", "BridgeB", "BridgeC"]
+  - id: "C4"
+    neighbors: ["C1", "C2", "C3", "C5", "BridgeB", "BridgeC"]
+  - id: "C5"
+    neighbors: ["C1", "C2", "C3", "C4", "BridgeB", "BridgeC"]
+
+  # Cluster D (D1–D4)
+  - id: "D1"
+    neighbors: ["D2", "D3", "D4", "BridgeC", "BridgeD"]
+  - id: "D2"
+    neighbors: ["D1", "D3", "D4", "BridgeC", "BridgeD"]
+  - id: "D3"
+    neighbors: ["D1", "D2", "D4", "BridgeC", "BridgeD"]
+  - id: "D4"
+    neighbors: ["D1", "D2", "D3", "BridgeC", "BridgeD"]
+
+  # Bridge Nodes (Ring structure)
+  - id: "BridgeA"
+    neighbors: ["A1", "A2", "A3", "A4", "A5", "B1", "B2", "B3", "B4"]
+  - id: "BridgeB"
+    neighbors: ["B1", "B2", "B3", "B4", "C1", "C2", "C3", "C4", "C5"]
+  - id: "BridgeC"
+    neighbors: ["C1", "C2", "C3", "C4", "C5", "D1", "D2", "D3", "D4"]
+  - id: "BridgeD"
+    neighbors: ["D1", "D2", "D3", "D4", "A1", "A2", "A3", "A4", "A5"]
