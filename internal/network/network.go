@@ -17,6 +17,13 @@ type Network struct {
 	hub      *ws.Hub
 }
 
+// Shutdown stops all nodes in the network.
+func (net *Network) Shutdown() {
+	for _, n := range net.Nodes {
+		n.Stop()
+	}
+}
+
 // NewNetwork initializes a Network with the given drop rate and WebSocket hub.
 func NewNetwork(dropRate float64, hub *ws.Hub) *Network {
 	return &Network{
