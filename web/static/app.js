@@ -435,11 +435,11 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   // ────────────────── 2D Visualization with D3.js ──────────────────
 
-  function render2DGraph(nodesData, linksData) {
+  function render2DGraph(nodesData = [], linksData = []) {
     // Clear any existing SVG contents
     svg.selectAll("*").remove();
 
-        const container = document.getElementById("vis-container");
+    const container = document.getElementById("vis-container");
     const width = container.clientWidth;
     const height = container.clientHeight;
 
@@ -447,7 +447,18 @@ document.addEventListener("DOMContentLoaded", async () => {
     svg
         .attr("width", width)
         .attr("height", height)
-        .attr("viewBox", `0 0 ${width} ${height}`);
+        .attr("viewBox", `0 0 ${width} ${height}`)
+        .style("width", "100%")
+        .style("height", "100%")
+        .style("max-width", "100%")
+        .style("max-height", "100%")
+        .style("display", "block")
+        .attr("preserveAspectRatio", "xMidYMid meet");
+
+    // If no data provided, just initialize the SVG and return
+    if (nodesData.length === 0) {
+      return;
+    }
 
     // Create D3 force simulation
     simulation = d3.forceSimulation(nodesData)
@@ -556,4 +567,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         .alpha(0.3)
         .restart();
     });
+    
+    // Initialize SVG to fill container on page load
+    render2DGraph();
 });

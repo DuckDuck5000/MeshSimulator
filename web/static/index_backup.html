@@ -2,8 +2,36 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>MeshSim Dashboard (2D)</title>
-  <style>
+  <title>MeshSim Dashboard (2D)</title>  
+      /* Header bars above each section */
+    #vis-header, #log-header {
+      padding: 8px 12px;
+      background: #1e293b;
+      color: #f1f5f9;
+      font-size: 1em;
+      flex-shrink: 0;
+    }────────────── Right "Visualization + Log" Pane ────────────────── */
+    #main {
+      flex: 1;                         /* take up all remaining width */
+      display: flex;
+      flex-direction: column;
+      background: #ffffff;
+      overflow: hidden;                /* we will let inner panes scroll if needed */
+    }
+    #vis-header, #log-header {
+      padding: 8px 12px;
+      background: #1e293b;
+      color: #f1f5f9;
+      font-size: 1em;
+      flex-shrink: 0;
+    }   /* ────────────────── Right "Visualization + Log" Pane ────────────────── */
+    #main {
+      flex: 1;                         /* take up all remaining width */
+      display: flex;
+      flex-direction: column;
+      background: #ffffff;
+      overflow: hidden;                /* we will let inner panes scroll if needed */
+    }
     /* ────────────────── Global & Layout Styles ────────────────── */
     html, body {
       margin: 0;
@@ -14,7 +42,7 @@
       display: flex;                  /* make the top‐level a row flex container */
     }
 
-    /* ─ Left "Controls" Pane ─ */
+    /* ─ Left “Controls” Pane ─ */
     #controls {
       width: 300px;
       border-right: 1px solid #ccc;
@@ -30,7 +58,7 @@
       color: #333;
     }
 
-    /* Ensure each "row" in the controls is on its own line */
+    /* Ensure each “row” in the controls is on its own line */
     #controls .row {
       margin-bottom: 12px;
     }
@@ -92,12 +120,13 @@
       margin-right: 6px;
     }
 
-    /* ────────────────── Right "Visualization + Log" Pane ────────────────── */
+    /* ────────────────── Right “Visualization + Log” Pane ────────────────── */
     #main {
       flex: 1;                         /* take up all remaining width */
       display: flex;
       flex-direction: column;
       background: #ffffff;
+      height: 100vh;                   /* fill the full viewport height */
       overflow: hidden;                /* we will let inner panes scroll if needed */
     }
 
@@ -111,48 +140,31 @@
     }
 
     /* Container for the SVG graph */
-    #vis-container {
-      flex: 1;
-      background: #111827;
-      position: relative;
-      overflow: hidden;
-      min-height: 0;
-      max-height: 100%;
-      width: 100%;
-      max-width: 100%;
-      display: flex;
-      flex-direction: column;
-    }
-    #graph {
-      flex: 1;
-      min-height: 0;
-      width: 100%;
-      height: 100%;
-      max-width: 100%;
-      max-height: 100%;
-      display: block;
-    }
-    
-    /* Force SVG to fill container */
-    #graph svg {
-      width: 100% !important;
-      height: 100% !important;
-      max-width: 100% !important;
-      max-height: 100% !important;
-      display: block;
-    }
+#vis-container {
+  flex: 1;
+  background: #111827;        /* Changed from #f9fafb */
+  position: relative;
+  overflow: hidden;
+  min-height: 0;
+  display: flex;              /* Added */
+  flex-direction: column;     /* Added */
+}
+#graph {
+  flex: 1;                    /* Changed from width/height 100% */
+  min-height: 0;              /* Added */
+}
 
     /* Event log area */
-    #log {
-      height: 200px;
-      min-height: 200px;
-      max-height: 200px;
-      padding: 10px;
-      font-size: 0.9em;
-      overflow-y: auto;
-      background: #ffffff;
-      flex-shrink: 0;
-    }
+#log {
+  height: 200px;
+  min-height: 200px;
+  max-height: 200px;
+  padding: 10px;
+  font-size: 0.9em;
+  overflow-y: auto;
+  background: #ffffff;
+  flex-shrink: 0;             /* Added */
+}
     #log div {
       margin-bottom: 6px;
       color: #1f2937;
@@ -185,7 +197,7 @@
   <div id="controls">
     <h2>Mesh Simulator</h2>
 
-    <!-- 1) Mode selection: "Use Existing Topology" vs "Create Custom Topology" -->
+    <!-- 1) Mode selection: “Use Existing Topology” vs “Create Custom Topology” -->
     <div class="row">
       <div class="checkbox-row">
         <input type="radio" name="topoMode" id="modeExisting" value="existing" checked>
@@ -293,7 +305,7 @@
     <!-- 8) Tip text -->
     <div class="row" style="margin-top: 8px;">
       <p style="font-size: 0.85em; color: #555; margin: 0;">
-        Tip: To replay or adjust parameters, click "Reset Simulation."
+        Tip: To replay or adjust parameters, click “Reset Simulation.”
       </p>
     </div>
   </div>
