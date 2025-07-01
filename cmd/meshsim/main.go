@@ -117,6 +117,11 @@ func handleConfigure(w http.ResponseWriter, r *http.Request) {
 	}
 	defer r.Body.Close()
 
+	// If a simulation is already running, shut it down before starting a new one.
+	if netSim != nil {
+		netSim.Shutdown()
+	}
+
 	// 1) Validate dropRate and TTL
 	if req.DropRate < 0.0 || req.DropRate > 1.0 {
 		http.Error(w, "dropRate must be between 0.0 and 1.0", http.StatusBadRequest)

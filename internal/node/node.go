@@ -31,6 +31,11 @@ type Node struct {
 	hub        *ws.Hub           // WebSocket hub to broadcast events
 }
 
+// Stop gracefully shuts down the node's goroutines.
+func (n *Node) Stop() {
+	close(n.Inbound)
+}
+
 // NewNode creates a new Node instance.
 func NewNode(
 	id string,
@@ -53,6 +58,7 @@ func NewNode(
 // Start begins the node’s main loop: listening for inbound messages, decrypting or forwarding.
 func (n *Node) Start() {
 	go func() {
+		defer close(n.Outbound)
 		for msg := range n.Inbound {
 			// 1) Broadcast “received” event (before TTL check)
 			n.hub.BroadcastEvent(ws.Event{
